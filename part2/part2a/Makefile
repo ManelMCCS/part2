@@ -20,6 +20,7 @@ help:
 
 compile_src:
 	gcc Atp1.c -o Atp1_exe
+	gcc Atp2.c -o Atp2_exe
 
 
 gdb: $(APP_NAME)	
@@ -53,3 +54,6 @@ $(files_list): %.o: %.$(src_ext)
 
 Atp1: compile_src 
 	./Atp1_exe
+
+Atp2: compile_src 
+	./Atp2_exe
