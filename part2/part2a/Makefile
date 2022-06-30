@@ -51,5 +51,5 @@ leaks:
 
 $(files_list): %.o: %.$(src_ext)
 
-Apt1: compile_src 
-	@_exe
+Atp1: compile_src 
+	./Atp1_exe
