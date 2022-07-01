@@ -4,37 +4,39 @@
 #include <pthread.h>
 
 // Create a global variable to to observe its changes
-int g = 0;
- 
+int global_test_var = 0;
+
 // A regular C function that executs as a thread
 void *myThreadFunction(void *vargp)
 {
     int id = *(int *)vargp;
-	
-	// Create a static variable to observe its changes
-    static int s = 0;
-  
+
+    // Create a static variable to observe its changes
+    static int static_test_var = 0;
+
     // Change static and global variables
-    s++; g++;
+    static_test_var++;
+    global_test_var++;
 
-	//Change again and print
-    printf("Thread ID(%p): %d, Static(%p): %d, Global(%p): %d\n", 
-                      &id, id,        &s, ++s,        &g, ++g);
+    // Change again and print
+    printf("Thread ID(%p): %d, Static(%p): %d, Global(%p): %d\n",
+           &id, id, &static_test_var, ++static_test_var, &global_test_var, ++global_test_var);
 
-	return NULL;
+    return NULL;
 }
 
 int main()
 {
-	pthread_t tid[3]; //Thread ID
+    pthread_t thread_id_array[3]; // Thread ID
 
-	for (int i = 0; i < 3; i++){
-        pthread_create(&tid[i], NULL, myThreadFunction, (void *)&tid[i]);
-        usleep(100);
-	}
-    
     for (int i = 0; i < 3; i++)
-        pthread_join(tid[i], NULL);
+    {
+        pthread_create(&thread_id_array[i], NULL, myThreadFunction, (void *)&thread_id_array[i]);
+        usleep(100);
+    }
 
-	exit(0);
+    for (int i = 0; i < 3; i++)
+        pthread_join(thread_id_array[i], NULL);
+
+    exit(0);
 }
