@@ -1,6 +1,6 @@
-#include<stdio.h>
-#include<pthread.h>
-#include<unistd.h>
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
 
 int counter;
 pthread_mutex_t counter_lock;
@@ -8,43 +8,49 @@ pthread_mutex_t counter_lock;
 int mod_value;
 pthread_mutex_t mod_value_lock;
 
-void* increment(void *arg)
+void *increment(void *arg)
 {
-    while(1){
+    while (1)
+    {
         pthread_mutex_lock(&counter_lock);
-        counter ++;
-        
-        if (counter%10 == 0){
+        counter++;
+
+        if (counter % 10 == 0)
+        {
             pthread_mutex_lock(&mod_value_lock);
-            mod_value ++;
-            usleep(30*1000); //Simulate some heavy computation
-            pthread_mutex_unlock(&mod_value_lock);
+            mod_value++;
+            usleep(30 * 1000); // Simulate some heavy computation
         }
 
         pthread_mutex_unlock(&counter_lock);
+        if (counter % 10 == 0)
+        {
+            pthread_mutex_unlock(&mod_value_lock); // put the unlock here to avoid the dead lock
+        }
 
         printf("\n Increment counter:%d   mod_value:%d\n", counter, mod_value);
-        
-        usleep(50*1000); //50 ms
+
+        usleep(50 * 1000); // 50 ms
     }
 
     return NULL;
 }
 
-void* fastincrement(void *arg)
+void *fastincrement(void *arg)
 {
-    while(1){
+    while (1)
+    {
         pthread_mutex_lock(&mod_value_lock);
         pthread_mutex_lock(&counter_lock);
-        counter ++;
+        counter++;
         mod_value += 10;
-        //usleep(300*1000); //Simulate some heavy computation
-        pthread_mutex_unlock(&counter_lock);
+        // usleep(300*1000); //Simulate some heavy computation
         pthread_mutex_unlock(&mod_value_lock);
+        pthread_mutex_unlock(&counter_lock); // change the unlock order to prevent dead locks
 
         printf("\n FastIncrement counter:%d   mod_value:%d\n", counter, mod_value);
-        
-        usleep(50*1000); //50 ms
+
+        usleep(50 * 1000); // 50 ms
     }
 
     return NULL;
@@ -54,18 +60,20 @@ int main(void)
 {
     pthread_t tid[2];
 
-    if (pthread_mutex_init(&counter_lock, NULL) != 0) {
+    if (pthread_mutex_init(&counter_lock, NULL) != 0)
+    {
         printf("\n mutex init failed\n");
         return 1;
     }
 
-    if (pthread_mutex_init(&mod_value_lock, NULL) != 0) {
+    if (pthread_mutex_init(&mod_value_lock, NULL) != 0)
+    {
         printf("\n mutex init failed\n");
         return 1;
     }
 
-	pthread_create(&(tid[0]), NULL, &increment, NULL);
-	pthread_create(&(tid[1]), NULL, &fastincrement, NULL);
+    pthread_create(&(tid[0]), NULL, &increment, NULL);
+    pthread_create(&(tid[1]), NULL, &fastincrement, NULL);
 
     pthread_join(tid[0], NULL);
     pthread_join(tid[1], NULL);
