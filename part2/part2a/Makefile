@@ -19,8 +19,9 @@ help:
 	@echo 'make exercises'
 
 compile_src:
-	gcc Atp1.c -o Atp1_exe
-	gcc Atp2.c -o Atp2_exe
+# gcc Atp1.c -o Atp1_exe
+# gcc Atp2.c -o Atp2_exe
+	gcc Atp3.c -o Atp3_exe
 
 
 gdb: $(APP_NAME)	
@@ -57,3 +58,6 @@ Atp1: compile_src
 
 Atp2: compile_src 
 	./Atp2_exe
+
+Atp3: compile_src 
+	./Atp3_exe
